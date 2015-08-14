@@ -4,7 +4,7 @@ import java.sql.Timestamp
 
 class AccountLogin(iGameId: String, iAccountType: String, iWorldId: String, dtEventTime: String, iEventId: String,
                    vVersionId: String, vUin: String, vClientIp: String, vZoneId: String, dtCreateTime: String,
-                   iFeeFlag: String, vLoginWay: String) extends Base with Product {
+                   iFeeFlag: String, vLoginWay: String) extends Base {
   
   var gameId = iGameId.toLong 
   var accountType = iAccountType.toLong

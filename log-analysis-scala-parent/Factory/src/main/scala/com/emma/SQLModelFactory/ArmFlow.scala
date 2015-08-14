@@ -9,7 +9,7 @@ class ArmFlow(iGameId:String, iAccountType: String, iWorldId: String, dtEventTim
               vUin: String, iRoleId: String, vRoleName: String, iRoleJob: String, iRoleGender: String, iRoleLevel: String,
               iRoleVipLevel: String, iRoleReputationLevel: String, vRoleElse1: String, vRoleElse2: String, vClientIP: String, 
               iArmId: String, iStar: String, iLevel: String, iArmType: String, iArmNum: String, iArmGuide: String, jEquipProperty: String,
-              iFlowDirection: String, iAction: String) extends Base with Product {
+              iFlowDirection: String, iAction: String) extends Base {
   var gameId = iGameId.toLong 
   var accountType = iAccountType.toLong
   var worldId = iWorldId.toLong

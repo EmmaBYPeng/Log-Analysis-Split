@@ -53,12 +53,12 @@ class Main {
       i += 2
     }
     
-    val targetFile: String = nameNode + "/LOG/" + iGameId + "/" + iAccountType + "/" + iWorldId + "/" + date + "/" + time + "/*"
-    val dstPath: String = "/LOG/" + iGameId + "/" + iAccountType + "/" + iWorldId + "/" + date + "/" + time + "/"
+    val targetFile = nameNode + "/LOG/" + iGameId + "/" + iAccountType + "/" + iWorldId + "/" + date + "/" + time + "/*"
+    val dstPath = "/LOG/" + iGameId + "/" + iAccountType + "/" + iWorldId + "/" + date + "/" + time + "/"
   
-    val conf: SparkConf = new SparkConf().setAppName("Log Filter")
-    val sc: SparkContext = new SparkContext(conf)
-    val sqlContext: HiveContext = new HiveContext(sc)
+    val conf = new SparkConf().setAppName("Log Filter")
+    val sc = new SparkContext(conf)
+    val sqlContext = new HiveContext(sc)
     
     try {
       val logLines = sc.textFile(targetFile, 4)
@@ -73,7 +73,7 @@ class Main {
         val c = Class.forName(l(0))
         val inst = c.newInstance().asInstanceOf[Base]
         val sp = new SaveParquet[Base](inst)
-        sp.logToParquet(sc, sqlContext, hadoopFile, l(1), dstPath, iGameId, iAccountType, iWorldId)
+        sp.logToParquet(sqlContext, hadoopFile, l(1), dstPath, iGameId, iAccountType, iWorldId)
       }
     } catch {
       case e: Throwable => e.printStackTrace()
