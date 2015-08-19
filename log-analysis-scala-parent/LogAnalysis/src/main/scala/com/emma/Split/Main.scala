@@ -2,7 +2,8 @@ package com.emma.Split
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.hive.HiveContext;
+import org.apache.spark.sql.hive.HiveContext
+import org.apache.spark.sql.SQLContext
 
 import scala.collection.JavaConverters._
 
@@ -12,7 +13,7 @@ import com.emma.SQLModelFactory.Base
 /**
  * @author user
  */
-class Main {
+object Main {
   
   def main(args: Array[String]): Unit = {
     var path: String = null
@@ -30,7 +31,7 @@ class Main {
         return
       }
       
-      if (!args(i).contains("help")) {
+      if (args(i).contains("help")) {
         println("--HDFS   Name Node  NOT NULL\n"
                         + "--DATE Index Field Date  NOT NULL\n" + "--GAMEID Index Filed Gameid\n"
                         + "--WORLDID Index Filed WORLDID\n"
@@ -45,7 +46,7 @@ class Main {
         case "--DATE" => date = args(i+1)
         case "--GAMEID" => iGameId = args(i+1)
         case "--WORLDID" => iWorldId = args(i+1)
-        case "--ACCOUNTTPYE" => iAccountType = args(i+1)
+        case "--ACCOUNTTYPE" => iAccountType = args(i+1)
         case "--TIME" => time = args(i+1)
         case "--CONF" => path = args(i+1)
       }     
@@ -58,10 +59,10 @@ class Main {
   
     val conf = new SparkConf().setAppName("Log Filter")
     val sc = new SparkContext(conf)
-    val sqlContext = new HiveContext(sc)
+    val sqlContext = new SQLContext(sc)
     
     try {
-      val logLines = sc.textFile(targetFile, 4)
+      val logLines = sc.textFile(targetFile, 4)      
       val hadoopFile = logLines.map { line => 
         val temp = (new LogLineSplit()).parseLog(line)
         (temp.keyName, temp.lineValues)
@@ -69,8 +70,9 @@ class Main {
       
       val list = ReadConfigurationFile.ReadSplitConfiguration(path).asScala.toList
       for (l <- list) {
-        println("gongmeng: " + l(0) + " " + l(1))
+        println("emma: " + l(0) + " " + l(1))
         val c = Class.forName(l(0))
+        //val sp = new SaveParquet[Base](inst)
         val inst = c.newInstance().asInstanceOf[Base]
         val sp = new SaveParquet[Base](inst)
         sp.logToParquet(sqlContext, hadoopFile, l(1), dstPath, iGameId, iAccountType, iWorldId)

@@ -2,17 +2,16 @@ package com.emma.Split
 
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SQLContext
-
+import org.apache.spark.sql._
 
 import com.emma.SQLModelFactory.Base
+import com.emma.SQLModelFactory.AccountLogin
 
-class SaveParquet[T <: Base](that: T) {
+class SaveParquet[T <: Base](that: T) extends Serializable {
   var t: T = that
   
-  def logToParquet(sqlContext: HiveContext, hadoopFile: RDD[(String, Array[String])], tableName: String, 
+  def logToParquet(sqlContext: SQLContext, hadoopFile: RDD[(String, Array[String])], tableName: String, 
                    dst: String, gameId: String, accountType: String, worldId: String) = {
     try {
       val name = tableName
@@ -25,15 +24,22 @@ class SaveParquet[T <: Base](that: T) {
         case (key, values) => values
       }
       
-      val tempLogs = tempValues.map { line => 
-        t.parseFromLogFile(line, gameId, accountType, worldId)
+      val schema = t.parseFromLogFile
+      val rowRdd = tempValues.map { line => 
+        val prefix = Array(gameId, accountType, worldId)
+        val sum = prefix ++ line.tail
+        Row.fromSeq(sum) 
       }
+      val schemaRdd = sqlContext.createDataFrame(rowRdd, schema)
       
-      val schemaRDD = sqlContext.implicits.rddToDataFrameHolder(tempLogs).toDF()
-
-      schemaRDD.printSchema()
+      schemaRdd.printSchema()
       
-      schemaRDD.saveAsParquetFile(dst + "/" + tableName + ".parquet")
+      println("BEGIN")
+      println("Count: " + schemaRdd.count())
+      schemaRdd.collect().foreach(println)
+      println("END")
+      
+      schemaRdd.saveAsParquetFile(dst + "/" + tableName + ".parquet")
             
     } catch {
       case e: Throwable => e.printStackTrace()
