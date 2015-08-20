@@ -25,21 +25,22 @@ class SaveParquet[T <: Base](that: T) extends Serializable {
       }
       
       val schema = t.parseFromLogFile
+      val prefix = Array(gameId, accountType, worldId)
       val rowRdd = tempValues.map { line => 
-        val prefix = Array(gameId, accountType, worldId)
         val sum = prefix ++ line.tail
-        Row.fromSeq(sum) 
+        t.toRow(sum)
       }
       val schemaRdd = sqlContext.createDataFrame(rowRdd, schema)
       
       schemaRdd.printSchema()
       
       println("BEGIN")
-      println("Count: " + schemaRdd.count())
       schemaRdd.collect().foreach(println)
       println("END")
       
       schemaRdd.saveAsParquetFile(dst + "/" + tableName + ".parquet")
+      // schemaRdd.saveAsParquetFile(tableName + ".parquet")
+
             
     } catch {
       case e: Throwable => e.printStackTrace()

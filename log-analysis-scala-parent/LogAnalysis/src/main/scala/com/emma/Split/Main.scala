@@ -72,7 +72,6 @@ object Main {
       for (l <- list) {
         println("emma: " + l(0) + " " + l(1))
         val c = Class.forName(l(0))
-        //val sp = new SaveParquet[Base](inst)
         val inst = c.newInstance().asInstanceOf[Base]
         val sp = new SaveParquet[Base](inst)
         sp.logToParquet(sqlContext, hadoopFile, l(1), dstPath, iGameId, iAccountType, iWorldId)
