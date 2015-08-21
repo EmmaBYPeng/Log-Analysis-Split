@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql._
+import org.apache.spark.sql.hive.HiveContext
 
 import com.emma.SQLModelFactory.Base
 import com.emma.SQLModelFactory.AccountLogin
@@ -11,7 +12,7 @@ import com.emma.SQLModelFactory.AccountLogin
 class SaveParquet[T <: Base](that: T) extends Serializable {
   var t: T = that
   
-  def logToParquet(sqlContext: SQLContext, hadoopFile: RDD[(String, Array[String])], tableName: String, 
+  def logToParquet(sqlContext: HiveContext, hadoopFile: RDD[(String, Array[String])], tableName: String, 
                    dst: String, gameId: String, accountType: String, worldId: String) = {
     try {
       val name = tableName
@@ -39,8 +40,6 @@ class SaveParquet[T <: Base](that: T) extends Serializable {
       println("END")
       
       schemaRdd.saveAsParquetFile(dst + "/" + tableName + ".parquet")
-      // schemaRdd.saveAsParquetFile(tableName + ".parquet")
-
             
     } catch {
       case e: Throwable => e.printStackTrace()

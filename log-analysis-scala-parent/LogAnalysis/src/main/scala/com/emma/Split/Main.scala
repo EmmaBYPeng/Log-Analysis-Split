@@ -59,7 +59,7 @@ object Main {
   
     val conf = new SparkConf().setAppName("Log Filter")
     val sc = new SparkContext(conf)
-    val sqlContext = new SQLContext(sc)
+    val sqlContext = new HiveContext(sc)
     
     try {
       val logLines = sc.textFile(targetFile, 4)      
