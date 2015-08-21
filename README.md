@@ -1,8 +1,10 @@
 # Log-Analysis-Split
-Rewrite of the splitting tool for log analysis
+Rewrite of the splitting tool for log analysis (Spark-1.3.1)
 
-Inferring schema using reflection (automatically convert an RDD to a DataFrame):
+Programmatically specifying the schema:
 
-- Since case classes in Scala 2.10 can support only up to 22 fields, we use custom classes that implements the Product interface
+- Create an RDD of Rows from the original RDD;
 
-- RDD[A] can be implicitly converted to a DataFrame and then be registered as a table, given that A <: Product
+- Create the schema represented by a StructType matching the structure of Rows in the RDD created in Step 1.
+
+- Apply the schema to the RDD of Rows via createDataFrame method provided by SQLContext.
